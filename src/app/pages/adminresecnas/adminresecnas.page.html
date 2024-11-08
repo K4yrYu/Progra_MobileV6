@@ -1,0 +1,44 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/" text="Atras" icon="arrow-back-outline" [routerLink]="['/paneladmin']"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Reseñas de Productos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-list>
+    <ion-card *ngFor="let resecnaa of arregloResecnasPalCrud" class="reseña-card">
+      <ion-item>
+        <ion-thumbnail slot="start">
+          <img 
+            [src]="resecnaa.foto_usuario ? resecnaa.foto_usuario : 'assets/img/user_default_photo.jpg'" 
+            alt="usuario_foto" 
+          />
+        </ion-thumbnail>
+        <ion-label>
+          <h2>Producto: {{ resecnaa.nombre_prod }}</h2>
+          <p><strong>Usuario: </strong>{{ resecnaa.username }}</p>
+          <p><strong>Reseña: </strong>{{ resecnaa.text_resecna }}</p>
+        </ion-label>
+      </ion-item>
+
+      <!-- Botones de eliminar y editar reseña -->
+      <ion-row class="action-buttons">
+        <ion-col>
+          <ion-button color="danger" expand="block" (click)="eliminarResecna(resecnaa)">
+            <ion-icon slot="start" name="trash"></ion-icon>
+            Eliminar
+          </ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button color="primary" expand="block" routerLink="/editarresecna">
+            <ion-icon slot="start" name="create"></ion-icon>
+            Editar
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-card>
+  </ion-list>
+</ion-content>
