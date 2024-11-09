@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, NavController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { HomePage } from './home.page';
 import { YouTubeService } from 'src/app/services/youtube.service';
@@ -38,6 +38,11 @@ class MockComicsService {
   }
 }
 
+// Mock de NavController
+class MockNavController {
+  navigateForward(url: string) {}
+}
+
 describe('HomePage', () => {
   let component: HomePage;
   let fixture: ComponentFixture<HomePage>;
@@ -51,6 +56,7 @@ describe('HomePage', () => {
         { provide: ManejodbService, useClass: MockManejodbService },
         { provide: AutenticacionService, useClass: MockAutenticacionService },
         { provide: ComicsService, useClass: MockComicsService },
+        { provide: NavController, useClass: MockNavController }, // Proveedor de MockNavController
         {
           provide: Router,
           useValue: {

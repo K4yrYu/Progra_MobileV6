@@ -1,62 +1,39 @@
 import { TestBed } from '@angular/core/testing';
-
 import { AutenticacionService } from './autenticacion.service';
 import { ManejodbService } from './manejodb.service';
+import { Router } from '@angular/router';
+
+// Mock de ManejodbService sin dependencia de SQLite
+class MockManejodbService {
+  actualizarEstadoUsuario2() {
+    return Promise.resolve();
+  }
+  cerrarSesion() {
+    return Promise.resolve();
+  }
+  obtenerUsuarioLogueado() {
+    return Promise.resolve({ id_usuario: 1, nombre: 'Usuario' });
+  }
+}
 
 describe('AutenticacionService', () => {
   let service: AutenticacionService;
-  let service2: ManejodbService;
+  let bdService: ManejodbService;
+  let routerSpy = { navigate: jasmine.createSpy('navigate') }; // Mock de Router
+
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [
+        AutenticacionService,
+        { provide: ManejodbService, useClass: MockManejodbService },
+        { provide: Router, useValue: routerSpy }
+      ]
+    });
     service = TestBed.inject(AutenticacionService);
-    service2 = TestBed.inject(ManejodbService);
+    bdService = TestBed.inject(ManejodbService);
   });
 
   it('should be created', async () => {
     expect(service).toBeTruthy();
   });
 });
-
-
-/* 
-
-import { TestBed } from '@angular/core/testing';
-
-import { AutenticacionService } from './autenticacion.service';
-
-describe('AutenticacionService', () => {
-  let service: AutenticacionService;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(AutenticacionService);
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-});
-
---------------------------------------------------
-
-import { TestBed } from '@angular/core/testing';
-
-import { AutenticacionService } from './autenticacion.service';
-import { ManejodbService } from './manejodb.service';
-
-describe('AutenticacionService', () => {
-  let service: AutenticacionService;
-  let service2: ManejodbService;
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(AutenticacionService);
-    service2 = TestBed.inject(ManejodbService);
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-});
-
-
-*/
