@@ -10,9 +10,9 @@ class MockManejodbService {
     return of(true);
   }
   fetchUsuarios() {
-    return of([]);
+    return of([{ username: 'usuarioExistente', correo: 'correo@existente.com' }]);
   }
-  agregarUsuariosCliente(rut: string, nombres: string, apellidos: string, usuario: string, contrasena: string, correo: string, pregunta: string, respuesta: string) {
+  agregarUsuariosCliente() {
     return Promise.resolve();
   }
 }
@@ -24,6 +24,7 @@ class MockAlertasService {
 describe('RegistroPage', () => {
   let component: RegistroPage;
   let fixture: ComponentFixture<RegistroPage>;
+  let mockRouter: Router;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -34,6 +35,8 @@ describe('RegistroPage', () => {
         { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } }
       ]
     }).compileComponents();
+
+    mockRouter = TestBed.inject(Router);
   });
 
   beforeEach(() => {
@@ -44,5 +47,43 @@ describe('RegistroPage', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('Debe mostrar error si hay campos vacíos', () => {
+    component.nombres = '';
+    component.apellidos = '';
+    component.rut = '';
+    component.usuario = '';
+    component.correo = '';
+    component.contrasena = '';
+    component.confirmarContrasena = '';
+    component.respuesta = '';
+    component.preguntaSeleccionada = '';
+
+    const errores = component.validarFormulario();
+    expect(errores).toContain('Todos los campos son obligatorios.');
+  });
+
+  it('Debe mostrar error si las contraseñas no coinciden', () => {
+    component.contrasena = 'Password1!';
+    component.confirmarContrasena = 'PasswordDiferente';
+
+    const errores = component.validarFormulario();
+    expect(errores).toContain('Las contraseñas no coinciden.');
+  });
+
+  it('Debe navegar a login después de un registro exitoso', async () => {
+    component.nombres = 'Nombre';
+    component.apellidos = 'Apellido';
+    component.rut = '12345678-k';
+    component.usuario = 'nuevoUsuario';
+    component.correo = 'nuevo@correo.com';
+    component.contrasena = 'Password1!';
+    component.confirmarContrasena = 'Password1!';
+    component.preguntaSeleccionada = '¿Cuál es tu color favorito?';
+    component.respuesta = 'Rojo';
+
+    await component.registrar();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
   });
 });

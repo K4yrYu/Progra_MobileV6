@@ -8,27 +8,13 @@ import { Platform } from '@ionic/angular';
 import { of } from 'rxjs';
 
 class MockManejodbService {
-  crearBD() {
-    return Promise.resolve();
-  }
-  dbState() {
-    return of(true);
-  }
-  fetchUsuarios() {
-    return of([]);
-  }
-  consultarUsuariosPorMantenerSesion() {
-    return Promise.resolve([]);
-  }
-  consultarUsuariosLoggin(user: string, clave: string) {
-    return Promise.resolve(true);
-  }
-  validarUsuarioBaneado(user: string) {
-    return Promise.resolve(false);
-  }
-  actualizarEstadoUsuario(user: string) {
-    return Promise.resolve();
-  }
+  crearBD() { return Promise.resolve(); }
+  dbState() { return of(true); }
+  fetchUsuarios() { return of([]); }
+  consultarUsuariosPorMantenerSesion() { return Promise.resolve([]); }
+  consultarUsuariosLoggin(user: string, clave: string) { return Promise.resolve(true); }
+  validarUsuarioBaneado(user: string) { return Promise.resolve(false); }
+  actualizarEstadoUsuario(user: string) { return Promise.resolve(); }
 }
 
 class MockAlertasSilenciosasService {
@@ -64,5 +50,25 @@ describe('LoginPage', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('debería crear el componente', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('debería establecer loginError en true si el usuario o contraseña están vacíos', async () => {
+    component.usernameunlogged = '';
+    component.password = '';
+    
+    await component.loggin(component.usernameunlogged, component.password);
+    expect(component.loginError).toBeTrue();
+  });
+
+  it('debería llamar al método loggin sin errores con credenciales válidas', async () => {
+    component.usernameunlogged = 'usuarioPrueba';
+    component.password = 'Prueba@1234';
+    
+    await component.loggin(component.usernameunlogged, component.password);
+    expect(component.loginError).toBeFalse();
   });
 });
