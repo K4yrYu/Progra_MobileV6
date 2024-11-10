@@ -1383,28 +1383,34 @@ async obtenerResecnas3() {
 // Trae todas las RESECNAS ()
 // Método para obtener todas las reseñas
 async obtenerResecnas() {
-  return this.database.executeSql('SELECT r.id_resecna, r.text_resecna, r.id_producto, u.username, u.foto_usuario, p.nombre_prod FROM resecna r INNER JOIN usuario u ON r.id_usuario = u.id_usuario INNER JOIN producto p ON r.id_producto = p.id_producto', []).then(res => {
-    //variable para almacenar el resultado de la consulta
+  return this.database.executeSql(
+    'SELECT r.id_resecna, r.text_resecna, r.id_producto, u.id_usuario, u.username, u.foto_usuario, p.nombre_prod FROM resecna r INNER JOIN usuario u ON r.id_usuario = u.id_usuario INNER JOIN producto p ON r.id_producto = p.id_producto', 
+    []
+  ).then(res => {
+    // Variable para almacenar el resultado de la consulta
     let itemsR: Resecnascrud[] = [];
-    //verificar si hay registros en la consulta
+    
+    // Verificar si hay registros en la consulta
     if (res.rows.length > 0) {
-      //se recorren los resultados
+      // Recorrer los resultados
       for (var i = 0; i < res.rows.length; i++) {
-        //se agrega el registro a mi variable (itemsU)
+        // Agregar el registro a la variable (itemsR)
         itemsR.push({
           id_resecna: res.rows.item(i).id_resecna,
           text_resecna: res.rows.item(i).text_resecna,
           id_producto: res.rows.item(i).id_producto,
+          id_usuario: res.rows.item(i).id_usuario, // Agregar id_usuario
           username: res.rows.item(i).username,
           nombre_prod: res.rows.item(i).nombre_prod,
           foto_usuario: res.rows.item(i).foto_usuario
-        })
+        });
       }
     }
     this.listadoResecnas.next(itemsR as any);
     return itemsR;
-  })
+  });
 }
+
 
 obtenerIdUsuarioLogueado() {
     // Suponiendo que ya tienes una función que consulta el usuario logueado
@@ -2176,7 +2182,18 @@ async validarRespuestaSeguridad(username: string, respuesta: string): Promise<bo
 
   //
   
+  notificacionesPendientes: { idUsuario: number, mensaje: string }[] = [];
 
+  async eliminarResecna(idResecna: string, idUsuario: number, motivo: string, nombreProd: string): Promise<void> {
+    const query = `DELETE FROM resecna WHERE id_resecna = ?`;
+    await this.database.executeSql(query, [idResecna]);
+  
+    // Crear mensaje de notificación con el nombre del producto y el motivo de eliminación
+    const mensaje = `Tu reseña sobre "${nombreProd}" ha sido eliminada. Motivo: ${motivo}`;
+    this.notificacionesPendientes.push({ idUsuario, mensaje });
+  }
+  
+  
   
   /////////////////////////////////////////////////////////////////////////////////////
   

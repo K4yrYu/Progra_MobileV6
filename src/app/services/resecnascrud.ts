@@ -5,4 +5,6 @@ export class Resecnascrud {
     username!: string;
     nombre_prod!: string;
     foto_usuario!: Blob;
-}
+    id_usuario!: number; // Campo agregado
+  }
+  

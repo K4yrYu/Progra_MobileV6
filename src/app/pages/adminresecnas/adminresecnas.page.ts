@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { NavigationExtras, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ManejodbService } from 'src/app/services/manejodb.service';
 import { Resecnascrud } from 'src/app/services/resecnascrud';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-adminresecnas',
@@ -10,9 +11,8 @@ import { Resecnascrud } from 'src/app/services/resecnascrud';
 })
 export class AdminresecnasPage implements OnInit {
 
-  arregloResecnasPalCrud: Resecnascrud[] = []; // Inicia como un arreglo vacío
+  arregloResecnasPalCrud: Resecnascrud[] = [];
   resecnaBaneA: any;
-
 
   arregloUsuarios: any = [
     {
@@ -31,50 +31,56 @@ export class AdminresecnasPage implements OnInit {
     }
   ]
 
-  constructor(private bd: ManejodbService, private router: Router) { }
+  constructor(private bd: ManejodbService, private router: Router, private alertController: AlertController) { }
 
   async ngOnInit() {
     // Verificar si la BD está disponible
     this.bd.dbState().subscribe(data => {
       if (data) {
-        // Llama a obtenerResecnas desde el servicio
         this.traeLaWa2(); // Cargar las reseñas al iniciar
       }
     });
   }
 
-  
-
   async traeLaWa2() {
     this.arregloResecnasPalCrud = await this.bd.obtenerResecnas();
   }
 
-  // Método para eliminar reseña
-  async eliminarResecna(rsc: Resecnascrud) {
-      let navigationExtras: NavigationExtras = {
-        state: {
-          resecnaBaneA: rsc
+  async eliminarResecnaConMotivo(resecna: Resecnascrud) {
+    const alert = await this.alertController.create({
+      header: `Eliminar reseña de "${resecna.nombre_prod}"`,
+      message: `Ingresa el motivo para eliminar la reseña de "${resecna.nombre_prod}"`,
+      inputs: [
+        {
+          name: 'motivo',
+          type: 'text',
+          placeholder: 'Escribe el motivo de la eliminación'
         }
-      }
-      this.router.navigate(['/editarresecna'], navigationExtras);
-    
-  } 
-
-
-
-
-
-
-
-  /*
-  async eliminarResecna(rsc: Resecnascrud) {
-    this.arregloUsuarios = await this.bd.consultarUsuariosPorUsername(rsc.username);
-
-    await this.bd.agregarMotivoSuspencionResecna(this.arregloUsuarios.id_usuario,rsc.id_resecna,this.motivo).then(() => {
-      // Actualizar la lista de reseñas después de eliminar
-      this.traeLaWa2(); // Refrescar la lista de reseñas
-      this.arregloUsuarios = []
-      this.motivo = "";
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          handler: async (data) => {
+            const motivo = data.motivo;
+            if (motivo) {
+              // Llama a la función de eliminar reseña con motivo en el servicio
+              await this.bd.eliminarResecna(resecna.id_resecna, resecna.id_usuario, motivo, resecna.nombre_prod);
+              // Filtra la reseña eliminada de la lista
+              this.arregloResecnasPalCrud = this.arregloResecnasPalCrud.filter(r => r.id_resecna !== resecna.id_resecna);
+            }
+          }
+        }
+      ]
     });
-  } */
+    await alert.present();
+  }
+  
 }
+
+
+
+

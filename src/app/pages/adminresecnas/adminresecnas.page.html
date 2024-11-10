@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/" text="Atras" icon="arrow-back-outline" [routerLink]="['/paneladmin']"></ion-back-button>
+      <ion-back-button defaultHref="/" text="Atrás" icon="arrow-back-outline" [routerLink]="['/paneladmin']"></ion-back-button>
     </ion-buttons>
     <ion-title>Reseñas de Productos</ion-title>
   </ion-toolbar>
@@ -24,23 +24,15 @@
         </ion-label>
       </ion-item>
 
-      <!-- Botones de eliminar y editar reseña -->
+      <!-- Botón para eliminar reseña con motivo -->
       <ion-row class="action-buttons">
         <ion-col>
-          <ion-button color="danger" expand="block" (click)="eliminarResecna(resecnaa)">
+          <ion-button color="danger" expand="block" (click)="eliminarResecnaConMotivo(resecnaa)">
             <ion-icon slot="start" name="trash"></ion-icon>
             Eliminar
           </ion-button>
         </ion-col>
-        <ion-col>
-          <ion-button color="primary" expand="block" >
-            <ion-icon slot="start" name="create"></ion-icon>
-            Editar
-          </ion-button>
-        </ion-col>
       </ion-row>
-
-        
     </ion-card>
   </ion-list>
 </ion-content>
