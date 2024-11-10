@@ -1,29 +1,27 @@
 import { TestBed } from '@angular/core/testing';
 import { ManejodbService } from './manejodb.service';
-
-// Mock de la base de datos
-class MockDatabase {
-  executeSql(query: string, values: any[]): Promise<any> {
-    return Promise.resolve({ rows: { length: 0, item: () => null } }); // Ajusta para simular resultados si es necesario
-  }
-}
+import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 
 describe('ManejodbService', () => {
   let service: ManejodbService;
+  let sqliteSpy: jasmine.SpyObj<SQLite>;
 
   beforeEach(() => {
+    const spy = jasmine.createSpyObj('SQLite', ['create']);
+
     TestBed.configureTestingModule({
       providers: [
         ManejodbService,
-        { provide: 'database', useClass: MockDatabase } // Proporciona un mock para la base de datos
+        { provide: SQLite, useValue: spy }
       ]
     });
+
     service = TestBed.inject(ManejodbService);
+    sqliteSpy = TestBed.inject(SQLite) as jasmine.SpyObj<SQLite>;
   });
 
   it('should be created', () => {
-    expect(service).toBeTruthy(); // Verifica que el servicio se crea correctamente
+    expect(service).toBeTruthy();
   });
 
-  // Puedes agregar pruebas adicionales para verificar la funcionalidad del servicio
 });

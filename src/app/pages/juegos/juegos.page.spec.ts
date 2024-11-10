@@ -14,15 +14,16 @@ class MockManejodbService {
   }
 
   fetchJuegos() {
-    return of([]); // Simula un arreglo vacío de juegos
+    return of([
+      { nombre_prod: 'Juego A' },
+      { nombre_prod: 'Juego B' }
+    ]); // Simula un arreglo de juegos
   }
 }
 
 // Mock del AlertasService
 class MockAlertasService {
-  presentAlert(title: string, message: string) {
-    // Simula la presentación de una alerta
-  }
+  presentAlert(title: string, message: string) {}
 }
 
 // Mock del Router
@@ -33,6 +34,7 @@ class MockRouter {
 describe('JuegosPage', () => {
   let component: JuegosPage;
   let fixture: ComponentFixture<JuegosPage>;
+  let mockRouter: MockRouter;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -46,10 +48,28 @@ describe('JuegosPage', () => {
 
     fixture = TestBed.createComponent(JuegosPage);
     component = fixture.componentInstance;
+    mockRouter = TestBed.inject(Router) as unknown as MockRouter;
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('debería navegar a la página de juego único al seleccionar un juego', () => {
+    const juego = { nombre_prod: 'Juego A' };
+    component.irJuegoUnico(juego);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/juegounico'], { state: { juegoSelect: juego } });
+  });
+
+  it('debería filtrar los juegos según el término de búsqueda', () => {
+    component.arregloJuegos = [
+      { nombre_prod: 'Juego A' },
+      { nombre_prod: 'Juego B' },
+      { nombre_prod: 'Otro Juego' }
+    ];
+    
+    component.buscarJuego({ target: { value: 'juego a' } });
+    expect(component.juegosFiltrados).toEqual([{ nombre_prod: 'Juego A' }]);
   });
 });
