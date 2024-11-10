@@ -17,7 +17,6 @@ import { Resecnascrud } from './resecnascrud';
 import { Favs } from './favs';
 import { Favsvan } from './favsvan';
 import { Productos } from './productos';
-import { Suspencionresecna } from './suspencionresecna';
 import { Suspencionusuario } from './suspencionusuario';
 
 @Injectable({
@@ -242,13 +241,11 @@ export class ManejodbService {
     return this.listadoFavs.asObservable();
   }
 
-  fetchSuspencionResecna(): Observable<Suspencionusuario[]> {
+  fetchSuspencionUsuario(): Observable<Suspencionusuario[]> {
     return this.listadoSuspencionUsuarios.asObservable();
   }
 
-  fetchSuspencionUsuario(): Observable<Suspencionresecna[]> {
-    return this.listadoSuspencionResecnas.asObservable();
-  }
+  
 
   dbState() {
     return this.isDBReady.asObservable();
@@ -1416,7 +1413,7 @@ obtenerIdUsuarioLogueado() {
 }
 
   //eliminar reseñas (por id_usuario e id_producto)
-  async eliminarResecnas(idR: any) {
+  async eliminarResecnas(idR: any, username: any) {
     try {
       await this.database.transaction(async (tx) => {
         await tx.executeSql('DELETE FROM resecna WHERE id_resecna = ?', [idR]);
@@ -2053,8 +2050,9 @@ async validarRespuestaSeguridad(username: string, respuesta: string): Promise<bo
   
 
   //verificara a las reseñas suspendidas, (nose mostraran, pero seguiran existiendo)
-  async consultarResecnasSuspendidas() {
-    return this.database.executeSql('SELECT * FROM suspencion WHERE id_resecna = ?', []).then(res => {
+  /*
+  async consultarResecnasSuspendidas(idR: any) {
+    return this.database.executeSql('SELECT * FROM suspencion WHERE id_usuario = ?', [idR]).then(res => {
       //variable para almacenar el resultado de la consulta
       let itemsSR: Suspencionresecna[] = [];
       //verificar si hay registros en la consulta
@@ -2078,6 +2076,32 @@ async validarRespuestaSeguridad(username: string, respuesta: string): Promise<bo
       
     })
   }
+  */
+  //traerlas resecnas con join
+  async obtenerResecnasUsuario2(idUsuario: number, rescn: number): Promise<any[]> {
+    const query = `
+      SELECT 
+        id_suspencion, 
+        motivo_suspencion, 
+        suspendido, 
+        id_usuario, 
+        id_resecna 
+      FROM suspencion 
+      WHERE id_usuario = ? AND id_resecna = ? `;
+  
+    try {
+      const res = await this.database.executeSql(query, [idUsuario,rescn]);
+      let resecnas = [];
+      for (let i = 0; i < res.rows.length; i++) {
+        resecnas.push(res.rows.item(i));
+      }
+      return resecnas;
+    } catch (error) {
+      console.error('Error al obtener reseñas:', error);
+      throw error;
+    }
+  }
+
 
   //insertar una nueva suspencion
   async agregarMotivoSuspencionResecna(iduser: any, idRsn: any, motivoSUS: any) {

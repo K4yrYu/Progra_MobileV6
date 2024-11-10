@@ -44,7 +44,7 @@ export class JuegosPage implements OnInit {
       }
     });
   }
-
+  
   irJuegoUnico(juego: any) {
     let navigationExtras: NavigationExtras = {
       state: {

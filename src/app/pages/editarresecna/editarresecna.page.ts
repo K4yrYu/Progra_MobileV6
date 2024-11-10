@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AlertasService } from 'src/app/services/alertas.service';
+import { ManejodbService } from 'src/app/services/manejodb.service';
+import { Productos } from 'src/app/services/productos';
 
 @Component({
   selector: 'app-editarresecna',
@@ -8,42 +11,46 @@ import { Router } from '@angular/router';
 })
 export class EditarresecnaPage implements OnInit {
   // Variables para la reseña
-  resecna = {
-    nombre_prod: 'Producto Ejemplo',
-    username: 'Usuario Ejemplo',
-    text_resecna: 'Esta es una reseña de ejemplo',
-    estado: 'disponible', // Estado inicial
-    motivoBaneo: '' // Motivo del baneo
-  };
+  resecnaSeVino: any;
+  errorMotivoVacio: boolean = false;
+  productaso: Productos[] = [];
+  motivoBaneo!: string | null ;
+  usuarioWorking: any;
 
-  // Lista de estados para el selector
-  estados = [
-    { value: 'disponible', viewValue: 'Disponible' },
-    { value: 'baneado', viewValue: 'Baneado' }
-  ];
+  constructor(
+    private bd: ManejodbService,
+    private router: Router,
+    private activedroute: ActivatedRoute,
+    private alertasService: AlertasService
+  ) {
+    this.activedroute.queryParams.subscribe((res) => {
+      if (this.router.getCurrentNavigation()?.extras.state) {
+        this.resecnaSeVino = this.router.getCurrentNavigation()?.extras?.state?.['resecnaBaneA'];
+      }
+    });
+  }
 
-  constructor(private router: Router) { }
-
-  ngOnInit() { }
-
-  onEstadoChange() {
-    // Limpia el motivo del baneo si el estado cambia a "disponible"
-    if (this.resecna.estado === 'disponible') {
-      this.resecna.motivoBaneo = '';
+  async ngOnInit() {
+    const result = await this.bd.consultarProductoPorId(this.resecnaSeVino.id_producto);
+    if (result !== null) {
+      this.productaso = result;
+    } else {
+      this.productaso = []; 
     }
   }
 
-  guardarCambios() {
-    // Verifica si se necesita el motivo del baneo
-    if (this.resecna.estado === 'baneado' && !this.resecna.motivoBaneo) {
-      alert('Por favor, ingresa el motivo del baneo');
+  async guardarCambios() {
+    //se ejecutara la func que graba la suspencion
+    if (!this.motivoBaneo) {
+      this.errorMotivoVacio = true
       return;
     }
-    
-    // Lógica para guardar los cambios aquí
-    console.log('Cambios guardados:', this.resecna);
 
+    this.usuarioWorking = await this.bd.consultarUsuariosPorUsername(this.resecnaSeVino.username);
+
+    await this.bd.agregarMotivoSuspencionResecna(this.usuarioWorking.id_usuario,this.resecnaSeVino.id_resecna,this.motivoBaneo);
+    this.errorMotivoVacio = false;
     // Redirigir a la página de CRUD reseñas
-    this.router.navigate(['/crudresecnas']);
+    this.router.navigate(['/adminresecnas']);
   }
 }

@@ -46,6 +46,9 @@ export class PerfilPage implements OnInit, ViewWillEnter {
     this.cdr.detectChanges(); // Forzar la detección de cambios para reflejar la imagen actualizada
   }
 
+
+  
+
   ngOnInit() {
     // Verificar si la base de datos está lista
     this.bd.dbState().subscribe(data => {

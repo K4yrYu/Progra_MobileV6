@@ -34,7 +34,7 @@ export class CrudusuariosPage implements OnInit {
 
 
   constructor(private alertasService: AlertasService, private bd: ManejodbService, private router: Router) { } // Inyección del servicio de alertas
-
+  
   ngOnInit() {
     // verificar si la BD está disponible
     this.bd.dbState().subscribe(data => {
