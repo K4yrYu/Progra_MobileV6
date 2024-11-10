@@ -79,7 +79,7 @@ export class ManejodbService {
 
 
   //suspenciones (motivo de baneos + elimniacion de contenidos)
-  suspencion: string = "CREATE TABLE IF NOT EXISTS suspencion (id_suspencion INTEGER PRIMARY KEY autoincrement, motivo_suspencion TEXT NOT NULL, suspendido BOOLEAN NOT NULL, id_usuario INTEGER, id_resecna INTEGER, FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario), FOREIGN KEY (id_resecna) REFERENCES resecna (id_resecna));";
+  suspencion: string = "CREATE TABLE IF NOT EXISTS suspencion (id_suspencion INTEGER PRIMARY KEY AUTOINCREMENT, motivo_suspencion TEXT NOT NULL, suspendido BOOLEAN NOT NULL, id_usuario INTEGER, id_resecna INTEGER, nombre_prod TEXT, text_resecna TEXT, FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario), FOREIGN KEY (id_resecna) REFERENCES resecna(id_resecna));";
   //--------------------------------------------------------------------------------------------------------
 
   //////////////////////////////////////INSERTS//////////////////////////////////////////////////
@@ -256,7 +256,7 @@ export class ManejodbService {
 
     this.platform.ready().then(() => {
       this.sqlite.create({
-        name: 'megagames30.db',
+        name: 'megagames31.db',
         location: 'default'
       }).then((db: SQLiteObject) => {
         this.database = db;
@@ -2184,17 +2184,78 @@ async validarRespuestaSeguridad(username: string, respuesta: string): Promise<bo
   
   notificacionesPendientes: { idUsuario: number, mensaje: string }[] = [];
 
-  async eliminarResecna(idResecna: string, idUsuario: number, motivo: string, nombreProd: string): Promise<void> {
-    const query = `DELETE FROM resecna WHERE id_resecna = ?`;
-    await this.database.executeSql(query, [idResecna]);
+  async eliminarResecna(idResecna: string, idUsuario: number, motivo: string): Promise<void> {
+    try {
+      await this.database.transaction(async (tx) => {
+        // Inserta la reseña en la tabla de suspencion
+        await tx.executeSql(
+          `INSERT INTO suspencion (motivo_suspencion, suspendido, id_usuario, id_resecna) VALUES (?, ?, ?, ?)`,
+          [motivo, 1, idUsuario, idResecna]
+        );
+
+        // Elimina la reseña de la tabla resecna
+        await tx.executeSql(`DELETE FROM resecna WHERE id_resecna = ?`, [idResecna]);
+      });
+    } catch (e) {
+      this.alertasService.presentAlert("Eliminar", "Error: " + JSON.stringify(e));
+    }
+  }
+  ////////////////////////////////////
   
-    // Crear mensaje de notificación con el nombre del producto y el motivo de eliminación
-    const mensaje = `Tu reseña sobre "${nombreProd}" ha sido eliminada. Motivo: ${motivo}`;
-    this.notificacionesPendientes.push({ idUsuario, mensaje });
+  async banearResecna(idResecna: string, idUsuario: number, motivo: string) {
+    const queryResena = `
+      SELECT r.text_resecna, p.nombre_prod 
+      FROM resecna r 
+      JOIN producto p ON r.id_producto = p.id_producto 
+      WHERE r.id_resecna = ?
+    `;
+    const result = await this.database.executeSql(queryResena, [idResecna]);
+    const reseñaData = result.rows.length > 0 ? result.rows.item(0) : null;
+  
+    if (reseñaData) {
+      const queryInsert = `
+        INSERT INTO suspencion (motivo_suspencion, suspendido, id_usuario, id_resecna, nombre_prod, text_resecna) 
+        VALUES (?, ?, ?, ?, ?, ?)
+      `;
+      await this.database.executeSql(queryInsert, [
+        motivo,
+        1,
+        idUsuario,
+        idResecna,
+        reseñaData.nombre_prod,
+        reseñaData.text_resecna,
+      ]);
+      console.log("Reseña insertada en suspencion:", reseñaData);
+  
+      const queryDelete = `DELETE FROM resecna WHERE id_resecna = ?`;
+      await this.database.executeSql(queryDelete, [idResecna]);
+      console.log("Reseña eliminada de resecna:", idResecna);
+    }
   }
   
   
   
-  /////////////////////////////////////////////////////////////////////////////////////
+  async obtenerResecnasBaneadasConDetalles(idUsuario: number) {
+    const query = `
+      SELECT motivo_suspencion, nombre_prod, text_resecna
+      FROM suspencion
+      WHERE suspendido = 1 AND id_usuario = ?
+    `;
+    const result = await this.database.executeSql(query, [idUsuario]);
+    const resecnasBaneadas = [];
+    for (let i = 0; i < result.rows.length; i++) {
+      resecnasBaneadas.push(result.rows.item(i));
+    }
+    console.log("Resultados de reseñas baneadas con detalles:", resecnasBaneadas);
+    return resecnasBaneadas;
+  }
   
 }
+  
+
+  
+
+  
+  
+  /////////////////////////////////////////////////////////////////////////////////////
+  

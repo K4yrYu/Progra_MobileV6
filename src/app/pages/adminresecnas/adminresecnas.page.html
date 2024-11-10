@@ -1,7 +1,12 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/" text="Atrás" icon="arrow-back-outline" [routerLink]="['/paneladmin']"></ion-back-button>
+      <ion-back-button
+        defaultHref="/"
+        text="Atrás"
+        icon="arrow-back-outline"
+        [routerLink]="['/paneladmin']"
+      ></ion-back-button>
     </ion-buttons>
     <ion-title>Reseñas de Productos</ion-title>
   </ion-toolbar>
@@ -12,9 +17,9 @@
     <ion-card *ngFor="let resecnaa of arregloResecnasPalCrud" class="reseña-card">
       <ion-item>
         <ion-thumbnail slot="start">
-          <img 
-            [src]="resecnaa.foto_usuario ? resecnaa.foto_usuario : 'assets/img/user_default_photo.jpg'" 
-            alt="usuario_foto" 
+          <img
+            [src]="resecnaa.foto_usuario ? resecnaa.foto_usuario : 'assets/img/user_default_photo.jpg'"
+            alt="usuario_foto"
           />
         </ion-thumbnail>
         <ion-label>
@@ -24,7 +29,6 @@
         </ion-label>
       </ion-item>
 
-      <!-- Botón para eliminar reseña con motivo -->
       <ion-row class="action-buttons">
         <ion-col>
           <ion-button color="danger" expand="block" (click)="eliminarResecnaConMotivo(resecnaa)">

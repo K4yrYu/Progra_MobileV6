@@ -1,14 +1,19 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/" text="Atrás" icon="arrow-back" [routerLink]="['/perfil']"></ion-back-button>
+      <ion-back-button
+        defaultHref="/"
+        text="Atrás"
+        icon="arrow-back"
+        [routerLink]="['/perfil']"
+      ></ion-back-button>
     </ion-buttons>
     <ion-title>Mis Reseñas</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <!-- Validación para mostrar reseñas o un mensaje alternativo -->
+  <!-- Reseñas activas -->
   <ng-container *ngIf="resecnas && resecnas.length > 0; else noResenas">
     <ion-card *ngFor="let resecna of resecnas" class="reseña-card">
       <ion-card-header>
@@ -16,9 +21,6 @@
       </ion-card-header>
       <ion-card-content>
         <p class="reseña-texto">{{ resecna.text_resecna }}</p>
-        <ion-button color="danger" expand="block" class="boton-eliminar" (click)="eliminarResena(resecna.id_resecna)">
-          Eliminar
-        </ion-button>
       </ion-card-content>
     </ion-card>
   </ng-container>
@@ -29,4 +31,16 @@
       <ion-card-content>No tienes reseñas registradas.</ion-card-content>
     </ion-card>
   </ng-template>
+
+  <!-- Reseñas Baneadas -->
+  <ion-card *ngIf="resecnasBaneadas && resecnasBaneadas.length > 0">
+    <ion-card-header>
+      <ion-card-title>Reseñas Baneadas</ion-card-title>
+    </ion-card-header>
+    <ion-card-content *ngFor="let resecna of resecnasBaneadas">
+      <p><strong>Producto:</strong> {{ resecna.nombre_prod }}</p>
+      <p><strong>Motivo del Baneo:</strong> {{ resecna.motivo_suspencion }}</p>
+      <p><strong>Reseña:</strong> {{ resecna.text_resecna }}</p>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
