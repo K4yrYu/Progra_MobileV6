@@ -151,13 +151,22 @@ export class EditarusuarioPage implements OnInit {
     }
 
     if(this.usuarioLlego.estado_user === 0){
-      if(!this.motivoBan){
+      if(this.motivoBan === ''){
         this.errorCampos = true;
         return;
       }
     }
 
     try {
+      
+      await this.bd.agregarMotivoSuspencionUsuser(this.motivoBan,this.usuarioLlego.username,this.usuarioLlego.id_usuario);
+
+      if(this.usuarioLlego.estado_user === false){
+        await this.bd.agregarMotivoSuspencionUsuser(this.motivoBan,this.usuarioLlego.username,this.usuarioLlego.id_usuario);
+      } else {
+        await this.bd.eliminarMotivoSuspencionUsuser(this.usuarioLlego.id_usuario);
+      }
+
       await this.bd.modificarUsuarioConSeguridadAdmin(
         this.usuarioLlego.id_usuario,
         this.usuarioLlego.rut_usuario,
@@ -171,13 +180,6 @@ export class EditarusuarioPage implements OnInit {
         this.usuarioLlego.id_rol,
         this.respuestaSeguridad,
       );
-      await this.bd.agregarMotivoSuspencionUsuser(this.motivoBan,this.usuarioLlego.username,this.usuarioLlego.id_usuario);
-
-      if(this.usuarioLlego.estado_user === 0){
-        await this.bd.agregarMotivoSuspencionUsuser(this.motivoBan,this.usuarioLlego.username,this.usuarioLlego.id_usuario);
-      } else {
-        await this.bd.eliminarMotivoSuspencionUsuser(this.usuarioLlego.id_usuario);
-      }
 
       this.alertasService.presentAlert("Éxito", "Usuario modificado correctamente.");
       this.router.navigate(['/crudusuarios']);

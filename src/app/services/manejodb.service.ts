@@ -2285,15 +2285,15 @@ async validarRespuestaSeguridad(username: string, respuesta: string): Promise<bo
 
   //consultar la suspencion actual
   async consultarSuspencionUsuario(sususu: string): Promise<string | null> {
-    const sql = "SELECT motivo_suspencion FROM sususuario WHERE nombreuser = ?";
+    const sql = "SELECT * FROM sususuario WHERE user_suspendido = ?";
   
     try {
       const res = await this.database.executeSql(sql, [sususu]);
   
       if (res.rows.length > 0) {
         // Devuelve solo el motivo de baneo
-        const mtvSS = res.rows.item(0).motivo_suspencion;
-        this.alertasService.presentAlert('Usuario Suspendido',`Motivo: ${mtvSS}`)
+        const mtvSS = res.rows.item(0);
+        this.alertasService.presentAlert('Usuario Suspendido',`Motivo: ${mtvSS.motivo_suspencion}`) 
         return mtvSS;
       } else {
         return null; // Si no hay registros de suspensión activos
