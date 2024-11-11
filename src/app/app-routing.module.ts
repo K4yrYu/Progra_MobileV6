@@ -177,10 +177,6 @@ const routes: Routes = [
     loadChildren: () => import('./pages/historialventas/historialventas.module').then( m => m.HistorialventasPageModule)
   },
   {
-    path: 'editarresecna',
-    loadChildren: () => import('./pages/editarresecna/editarresecna.module').then( m => m.EditarresecnaPageModule)
-  },
-  {
     path: 'cambiocontra',
     loadChildren: () => import('./pages/cambiocontra/cambiocontra.module').then( m => m.CambiocontraPageModule)
   },

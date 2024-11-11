@@ -256,7 +256,7 @@ export class ManejodbService {
 
     this.platform.ready().then(() => {
       this.sqlite.create({
-        name: 'megagames31.db',
+        name: 'megagames32.db',
         location: 'default'
       }).then((db: SQLiteObject) => {
         this.database = db;
@@ -2235,21 +2235,42 @@ async validarRespuestaSeguridad(username: string, respuesta: string): Promise<bo
   
   
   
-  async obtenerResecnasBaneadasConDetalles(idUsuario: number) {
-    const query = `
-      SELECT motivo_suspencion, nombre_prod, text_resecna
-      FROM suspencion
-      WHERE suspendido = 1 AND id_usuario = ?
-    `;
+  async obtenerResecnasBaneadasConDetalles(idUsuario: string): Promise<any[]> {
+    const query = `SELECT id_suspencion, motivo_suspencion, nombre_prod, text_resecna FROM suspencion WHERE id_usuario = ?`;
     const result = await this.database.executeSql(query, [idUsuario]);
-    const resecnasBaneadas = [];
+    let resecnasBaneadas = [];
     for (let i = 0; i < result.rows.length; i++) {
       resecnasBaneadas.push(result.rows.item(i));
     }
-    console.log("Resultados de reseñas baneadas con detalles:", resecnasBaneadas);
     return resecnasBaneadas;
   }
+  async eliminarResecnauser(idResecna: string) {
+    const query = 'DELETE FROM resecna WHERE id_resecna = ?';
+    const result = await this.database.executeSql(query, [idResecna]);
+    if (result.rowsAffected > 0) {
+      console.log('Reseña activa eliminada con éxito:', idResecna);
+    } else {
+      console.log('No se encontró la reseña activa:', idResecna);
+    }
+  }
+
   
+  async eliminarResecnaBaneadauser(id_suspencion: string): Promise<boolean> {
+    console.log('Intentando eliminar reseña baneada con id_suspencion:', id_suspencion);
+    const query = 'DELETE FROM suspencion WHERE id_suspencion = ?';
+    try {
+      const result = await this.database.executeSql(query, [id_suspencion]);
+      if (result.rowsAffected > 0) {
+        console.log('Reseña baneada eliminada con éxito:', id_suspencion);
+        return true;
+      } else {
+        throw new Error(`No se encontró la reseña baneada con id_suspencion: ${id_suspencion}`);
+      }
+    } catch (error) {
+      console.error('Error al intentar eliminar la reseña baneada:', error);
+      throw error; // Lanza el error para que sea capturado en el componente
+    }
+  }
 }
   
 

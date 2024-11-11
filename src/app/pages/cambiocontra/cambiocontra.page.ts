@@ -11,13 +11,12 @@ import { ManejodbService } from 'src/app/services/manejodb.service';
 export class CambiocontraPage {
   claveActual: string = '';
   claveNueva: string = '';
-  claveViene: string = '';
   confirmPassword: string = '';
   claveCorrecta: boolean = false;
   errorMessage: string = '';
 
   // Definir la variable que contendrá los datos del usuario conectado
-  arregloUsuarioConectado: any = [
+  arregloUsuarioConectado: any[] = [
     {
       id_usuario: '',
       rut_usuario: '',
@@ -30,7 +29,7 @@ export class CambiocontraPage {
       foto_usuario: '',
       estado_user: '',
       userlogged: '',
-      mantener_sesion: 0, // Cambiado a un valor numérico
+      mantener_sesion: 0,
       id_rol: ''
     }
   ];
@@ -38,12 +37,15 @@ export class CambiocontraPage {
   // Patrón de validación para la nueva contraseña
   passwordPattern: RegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\|`"'=-])[A-Za-z\d!@#$%^&*()_+{}\[\]:;<>,.?~\\|`"'=-]{6,}$/;
 
-  constructor(private router: Router, private bd: ManejodbService, private alertasService: AlertasService) {}
+  constructor(
+    private router: Router,
+    private bd: ManejodbService,
+    private alertasService: AlertasService
+  ) {}
 
-  verificarContrasenaActual() {
-    this.ValidarClaveUsuario();
-    // Verificar si la contraseña actual es correcta
-    if (this.claveActual === this.arregloUsuarioConectado.clave) {
+  async verificarContrasenaActual() {
+    await this.ValidarClaveUsuario();
+    if (this.claveActual === this.arregloUsuarioConectado[0].clave) {
       this.claveCorrecta = true;
       this.errorMessage = ''; // Limpiar cualquier mensaje de error anterior
     } else {
@@ -51,29 +53,25 @@ export class CambiocontraPage {
     }
   }
 
-  cambiarContrasena() {
-    // Validar que la nueva contraseña no sea igual a la actual
+  async cambiarContrasena() {
     if (this.claveNueva === this.claveActual) {
       this.errorMessage = 'La nueva contraseña no puede ser igual a la contraseña actual';
       return;
     }
 
-    // Validar la nueva contraseña con el patrón de seguridad
     if (!this.passwordPattern.test(this.claveNueva)) {
       this.errorMessage = 'La nueva contraseña debe tener al menos 6 caracteres, una mayúscula, una minúscula, un número y un carácter especial';
       return;
     }
 
-    // Verificar que la nueva contraseña coincida con la confirmación
     if (this.claveNueva !== this.confirmPassword) {
       this.errorMessage = 'Las contraseñas no coinciden';
       return;
     }
 
-    // Si todas las validaciones son exitosas, redirigir al perfil
     this.errorMessage = '';
-    this.bd.cambiarContrasena(this.arregloUsuarioConectado.id_usuario, this.claveNueva);
-    this.alertasService.presentAlert('Listo','Contraseña cambiada con éxito');
+    await this.bd.cambiarContrasena(this.arregloUsuarioConectado[0].id_usuario, this.claveNueva);
+    this.alertasService.presentAlert('Listo', 'Contraseña cambiada con éxito');
     this.arregloUsuarioConectado = [];
     this.router.navigate(['/perfil']);
   }
@@ -83,8 +81,7 @@ export class CambiocontraPage {
     this.router.navigate(['/perfil']);
   }
 
-
-  async ValidarClaveUsuario(){
+  async ValidarClaveUsuario() {
     this.arregloUsuarioConectado = await this.bd.consultarUsuariosPorEstadoConectado();
   }
 }
