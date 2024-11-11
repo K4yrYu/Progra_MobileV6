@@ -2292,7 +2292,9 @@ async validarRespuestaSeguridad(username: string, respuesta: string): Promise<bo
   
       if (res.rows.length > 0) {
         // Devuelve solo el motivo de baneo
-        return res.rows.item(0).motivo_suspencion;
+        const mtvSS = res.rows.item(0).motivo_suspencion;
+        this.alertasService.presentAlert('Usuario Suspendido',`Motivo: ${mtvSS}`)
+        return mtvSS;
       } else {
         return null; // Si no hay registros de suspensión activos
       }

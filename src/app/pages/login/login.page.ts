@@ -107,6 +107,7 @@ export class LoginPage implements OnInit {
           });
         } else {
           this.usuarioBaneadoError = true;
+          this.weonbaneao();
           this.loginError = false;
           this.resetFields();
         }
@@ -120,6 +121,10 @@ export class LoginPage implements OnInit {
       this.usuarioBaneadoError = false;
       this.resetFields();
     });
+  }
+
+  async weonbaneao(){
+    await this.bd.consultarSuspencionUsuario(this.usernameunlogged);
   }
 
   alertauser(x: any) {
