@@ -80,6 +80,9 @@ export class ManejodbService {
 
   //suspenciones (motivo de baneos + elimniacion de contenidos)
   suspencion: string = "CREATE TABLE IF NOT EXISTS suspencion (id_suspencion INTEGER PRIMARY KEY AUTOINCREMENT, motivo_suspencion TEXT NOT NULL, suspendido BOOLEAN NOT NULL, id_usuario INTEGER, id_resecna INTEGER, nombre_prod TEXT, text_resecna TEXT, FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario), FOREIGN KEY (id_resecna) REFERENCES resecna(id_resecna));";
+
+  //suspencion del usuario
+  sususuario: string = "CREATE TABLE IF NOT EXISTS sususuario (id_sususuario INTEGER PRIMARY KEY autoincrement, motivo_suspencion TEXT NOT NULL, user_suspendido VARCHAR(20) NOT NULL, id_usuario INTEGER, FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario));";
   //--------------------------------------------------------------------------------------------------------
 
   //////////////////////////////////////INSERTS//////////////////////////////////////////////////
@@ -283,6 +286,7 @@ export class ManejodbService {
       await this.database.executeSql(this.favoritos, []);
       await this.database.executeSql(this.seguridad, []);
       await this.database.executeSql(this.suspencion, []);
+      await this.database.executeSql(this.sususuario, []);
 
       // Verificar si ya existe el usuario 'admin'
       const res = await this.database.executeSql('SELECT * FROM usuario WHERE username = "admin"', []);
@@ -2271,6 +2275,85 @@ async validarRespuestaSeguridad(username: string, respuesta: string): Promise<bo
       throw error; // Lanza el error para que sea capturado en el componente
     }
   }
+
+
+  
+  /////////////////////////////////////////////////////////////////////////////////////
+  
+  ////////////////////////CRUD DE SUSPENCIONES DEL USUARIO//////////////////////////////
+  
+
+  //consultar la suspencion actual
+  async consultarSuspencionUsuario(sususu: string): Promise<string | null> {
+    const sql = "SELECT motivo_suspencion FROM sususuario WHERE nombreuser = ?";
+  
+    try {
+      const res = await this.database.executeSql(sql, [sususu]);
+  
+      if (res.rows.length > 0) {
+        // Devuelve solo el motivo de baneo
+        return res.rows.item(0).motivo_suspencion;
+      } else {
+        return null; // Si no hay registros de suspensión activos
+      }
+    } catch (e) {
+      this.alertasService.presentAlert('Error al obtener suspensión:', JSON.stringify(e));
+      throw e;
+    }
+  }
+
+  //agregar una suspencion del usuario
+  agregarMotivoSuspencionUsuser(motivo_baneo: string, nombreuser: string, id_usuario: number): void {
+    const sql = "INSERT INTO sususuario (motivo_suspencion, user_suspendido, id_usuario) VALUES (?, ?, ?)";
+    const valores = [motivo_baneo, nombreuser, id_usuario];
+  
+    try {
+      this.database.executeSql(sql, valores)
+        .then(() => {
+          this.alertasService.presentAlert('EXITO','Motivo de suspensión agregado correctamente');
+        })
+        .catch(e => {
+          this.alertasService.presentAlert('Error al agregar motivo de suspensión:', JSON.stringify(e));
+        });
+    } catch (error) {
+      this.alertasService.presentAlert('Error inesperado:', JSON.stringify(error));
+    }
+  }
+
+
+  //eliminar la suspencion del usuario
+  eliminarMotivoSuspencionUsuser(nombreuser: string): void {
+    const sql = "DELETE FROM sususuario WHERE user_suspendido = ?";
+    const valores = [nombreuser];
+  
+    try {
+      this.database.executeSql(sql, valores)
+        .then(() => {
+          this.alertasService.presentAlert('EXITO','Motivo de suspensión agregado correctamente');
+        })
+        .catch(e => {
+          this.alertasService.presentAlert('Error al agregar motivo de suspensión:', JSON.stringify(e));
+        });
+    } catch (error) {
+      this.alertasService.presentAlert('Error inesperado:', JSON.stringify(error));
+    }
+  }
+
+  /*
+  
+  sususuario: string = "CREATE TABLE IF NOT EXISTS sususuario (id_sususuario INTEGER PRIMARY KEY autoincrement, motivo_suspencion TEXT NOT NULL, user_suspendido VARCHAR(20) NOT NULL, id_usuario INTEGER, FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario));";
+  
+  */
+  
+  /////////////////////////////////////////////////////////////////////////////////////
+  
+
+
+
+
+
+
+
 }
   
 
