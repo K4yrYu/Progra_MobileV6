@@ -16,6 +16,7 @@ interface Usuario {
   estado: string;
   foto?: string;
   preguntaSeguridad?: string;
+
 }
 
 @Component({
@@ -64,6 +65,7 @@ export class AgregarusuarioPage {
   errorFormatoContrasena: boolean = false;
   errorRut: boolean = false;
   errorUsuarioExistente: boolean = false;
+  errorUsuarioConEspacios: boolean = false;
 
   constructor(
     private router: Router,
@@ -149,6 +151,11 @@ export class AgregarusuarioPage {
 
     if (await this.bd.verificarUsuarioExistente(this.usuario.usuario)) {
       this.errorUsuarioExistente = true;
+      return;
+    }
+
+    if (/\s/.test(this.usuario.usuario)) {
+      this.errorUsuarioConEspacios = true;
       return;
     }
 
