@@ -70,7 +70,7 @@ export class EditarjuguetePage implements OnInit {
       return;
     }
 
-    if(this.jugueteLlego.stock_prod = 0) {
+    if(this.jugueteLlego.stock_prod === 0) {
       this.Stock0NoDisponible();
     }
 

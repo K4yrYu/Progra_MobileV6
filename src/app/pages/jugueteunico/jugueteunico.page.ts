@@ -169,12 +169,16 @@ export class JugueteunicoPage implements OnInit {
         this.alertasService.presentAlert("Error", "Debes estar logueado para agregar una reseña.");
         return;
       }
-
-      await this.bd.agregarResecnas(this.laresecna, idUserLogged, this.jugueteLlego.id_producto);
-      this.laresecna = ''; // Reiniciar la reseña
-      this.hayResecna = true;
-      await this.obtenerResecnas2();
-      await this.fetchJugueteUnico();
+      if (this.laresecna === ''){
+        this.alertasService.presentAlert('Error', 'No puedes agregar una reseña vacía.');
+      } else {
+        await this.bd.agregarResecnas(this.laresecna, idUserLogged, this.jugueteLlego.id_producto);
+        this.laresecna = ''; // Reiniciar la reseña
+        this.hayResecna = true;
+        await this.obtenerResecnas2();
+        await this.fetchJugueteUnico();
+      }
+      
     } catch (error) {
       console.error('Error al subir reseña:', error);
       this.alertasService.presentAlert('Error', 'No se pudo subir la reseña: ' + JSON.stringify(error));

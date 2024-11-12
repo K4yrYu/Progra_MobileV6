@@ -165,11 +165,15 @@ export class JuegounicoPage implements OnInit {
   async SubirResecna() {
     this.idUserLogged = await this.bd.obtenerIdUsuarioLogueado();
     if (this.idUserLogged) {
-      await this.bd.agregarResecnas(this.laresecna, this.idUserLogged, this.juegoLlego.id_producto);
-      this.laresecna = ''; // Reiniciar la reseña después de subirla
-      this.hayResecna = true;
-      await this.obtenerResecnas2();
-      await this.fetchJuegoUnico();
+      if (this.laresecna === ''){
+        this.alertasService.presentAlert('Error', 'No puedes agregar una reseña vacía.');
+      } else {
+        await this.bd.agregarResecnas(this.laresecna, this.idUserLogged, this.juegoLlego.id_producto);
+        this.laresecna = ''; // Reiniciar la reseña después de subirla
+        this.hayResecna = true;
+        await this.obtenerResecnas2();
+        await this.fetchJuegoUnico();
+      }
     } else {
       this.alertasService.presentAlert('Error', 'Debes estar logueado para agregar una reseña.');
     }

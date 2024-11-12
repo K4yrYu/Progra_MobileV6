@@ -171,11 +171,15 @@ export class ConsolaunicaPage implements OnInit {
         return;
       }
 
-      await this.bd.agregarResecnas(this.laresecna, idUserLogged, this.consolaLlego.id_producto);
-      this.laresecna = '';
-      this.hayResecna = true;
-      await this.obtenerResecnas2();
-      await this.fetchConsolaUnica();
+      if (this.laresecna === ''){
+        this.alertasService.presentAlert('Error', 'No puedes agregar una reseña vacía.');
+      } else {
+        await this.bd.agregarResecnas(this.laresecna, idUserLogged, this.consolaLlego.id_producto);
+        this.laresecna = '';
+        this.hayResecna = true;
+        await this.obtenerResecnas2();
+        await this.fetchConsolaUnica();
+      }
     } catch (error) {
       console.error('Error al subir reseña:', error);
       this.alertasService.presentAlert('Error', 'No se pudo subir la reseña: ' + JSON.stringify(error));

@@ -511,7 +511,7 @@ async validarUsuarioBaneado(username: string): Promise<boolean> {
         //ya no va alarma ya que sencilla y unicamente se cerraran las sesiones que no eligieron quedar activas, al iniciar la app
       })
       .catch(error => {
-        this.alertasService.presentAlert("ERROR", 'Error al actualizar el estado de usuario: ' + error);
+        //this.alertasService.presentAlert("ERROR", 'Error al actualizar el estado de usuario: ' + error);
         throw error; // Rechaza la promesa en caso de error
       });
   }
@@ -1437,7 +1437,6 @@ async obtenerResecnas() {
 
 
 obtenerIdUsuarioLogueado() {
-    // Suponiendo que ya tienes una función que consulta el usuario logueado
     return this.database.executeSql('SELECT id_usuario FROM usuario WHERE userlogged = ?', [1])
         .then(res => res.rows.length > 0 ? res.rows.item(0).id_usuario : null);
 }
@@ -1758,7 +1757,7 @@ obtenerIdUsuarioLogueado() {
       );
   
       // Presentar alerta si se modificaron los stock de producto
-      this.alertasService.presentAlert("Actualizacion", "Stock de productos Actualizado");
+      //this.alertasService.presentAlert("Actualizacion", "Stock de productos Actualizado");
       await this.consultarJuegos();
       await this.consultarJuguetes();
       await this.consultarConsolas();
@@ -2329,7 +2328,8 @@ async consultarSuspencionUsuario(username: string): Promise<string | null> {
     try {
       this.database.executeSql(sql, valores)
         .then(() => {
-          this.alertasService.presentAlert('EXITO','Motivo de suspensión agregado correctamente');
+          //se suspendio al usuario
+          //this.alertasService.presentAlert('EXITO','Motivo de suspensión agregado correctamente');
         })
         .catch(e => {
           this.alertasService.presentAlert('Error al agregar motivo de suspensión:', JSON.stringify(e));
@@ -2348,7 +2348,7 @@ async consultarSuspencionUsuario(username: string): Promise<string | null> {
     try {
       this.database.executeSql(sql, valores)
         .then(() => {
-          this.alertasService.presentAlert('EXITO','Motivo de suspensión agregado correctamente');
+          //se agrega el motivo de suspencion
         })
         .catch(e => {
           this.alertasService.presentAlert('Error al agregar motivo de suspensión:', JSON.stringify(e));
@@ -2357,30 +2357,10 @@ async consultarSuspencionUsuario(username: string): Promise<string | null> {
       this.alertasService.presentAlert('Error inesperado:', JSON.stringify(error));
     }
   }
-
   /*
   
   sususuario: string = "CREATE TABLE IF NOT EXISTS sususuario (id_sususuario INTEGER PRIMARY KEY autoincrement, motivo_suspencion TEXT NOT NULL, user_suspendido VARCHAR(20) NOT NULL, id_usuario INTEGER, FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario));";
   
   */
-  
-  /////////////////////////////////////////////////////////////////////////////////////
-  
-
- 
-
-
-
-
-
-
-
 }
-  
-
-  
-
-  
-  
-  /////////////////////////////////////////////////////////////////////////////////////
   

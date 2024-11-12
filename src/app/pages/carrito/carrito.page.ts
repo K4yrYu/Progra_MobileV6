@@ -126,34 +126,32 @@ export class CarritoPage implements OnInit {
         SELECT d.id_producto, p.nombre_prod
         FROM detalle d
         JOIN producto p ON d.id_producto = p.id_producto
-        WHERE d.id_venta = ? AND (p.stock_prod = 0 OR p.estatus = 0);
+        WHERE d.id_venta = ? AND (p.estatus = 0);
       `;
-
+      
       const result = await this.bd.database.executeSql(query, [this.idVentaActiva]);
       const productosSinStockEnCarrito = [];
-
+  
       for (let i = 0; i < result.rows.length; i++) {
         productosSinStockEnCarrito.push(result.rows.item(i));
       }
-
-      // Solo procede a eliminar y mostrar la alerta si hay productos sin stock en el carrito
+  
+      // Si hay productos sin stock, eliminarlos y mostrar la alerta
       if (productosSinStockEnCarrito.length > 0) {
         for (let producto of productosSinStockEnCarrito) {
           await this.bd.eliminarProductoDelCarrito(this.idVentaActiva, producto.id_producto);
         }
-
-        // Muestra la alerta solo si no ha sido mostrada anteriormente
-        if (!this.alertaMostrada) {
-          this.alertasService.presentAlert('ÉXITO', 'Productos sin stock eliminados del carrito');
-          this.alertaMostrada = true; // Cambia la bandera para evitar futuras alertas
-        }
+        
+        // Mostrar la alerta
+        this.alertasService.presentAlert('ÉXITO', 'Productos sin stock eliminados del carrito');
       }
-
+  
     } catch (error) {
       console.error('Error al eliminar productos sin stock del carrito:', error);
       this.alertasService.presentAlert('ERROR', 'Error al eliminar productos sin stock: ' + error);
     }
   }
+  
 
   
   
@@ -182,11 +180,6 @@ export class CarritoPage implements OnInit {
   calcularTotal() {
     return this.productosDisponibles.reduce((total, producto) => total + producto.subtotal, 0);
   }
-
-  alertascarro() {
-    this.alertasService.presentAlert('Gracias Por Su Compra', '');
-  }
-
 
   async COMPRAAAAR(){
     await this.RestarStockAlComprar();

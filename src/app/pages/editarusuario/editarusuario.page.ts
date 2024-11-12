@@ -185,7 +185,6 @@ export class EditarusuarioPage implements OnInit {
         this.respuestaSeguridad,
       );
 
-      this.alertasService.presentAlert("Éxito", "Usuario modificado correctamente.");
       this.router.navigate(['/crudusuarios']);
     } catch (error) {
       await this.alertasService.presentAlert("Error", "Error al modificar el usuario: " + JSON.stringify(error));
