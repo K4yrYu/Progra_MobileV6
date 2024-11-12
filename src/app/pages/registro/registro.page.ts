@@ -93,7 +93,7 @@ export class RegistroPage implements OnInit {
     // Validar longitud y formato de la contraseña (solo si se llenó)
     const contraseñaValida = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{6,}$/.test(this.contrasena);
     if (this.contrasena && !contraseñaValida) {
-      errores.push('La contraseña debe tener al menos 6 caracteres, incluyendo mayúsculas, minúsculas y caracteres especiales.');
+      errores.push('La contraseña debe tener al menos 6 caracteres, incluyendo mayúsculas, minúsculas y caracteres especiales sin espacios en blanco.');
     }
 
     // Verificar si el usuario ya existe (solo si se llenó el campo usuario)
@@ -107,6 +107,15 @@ export class RegistroPage implements OnInit {
     if (correoExistente) {
       errores.push('El correo ya está registrado.');
     }
+
+    if (/\s/.test(this.usuario)) {
+      errores.push('El nombre de usuario no puede contener espacios en blanco.');
+    }
+
+    if (/\s/.test(this.contrasena)) {
+      errores.push('La clave no puede contener espacios en blanco.');
+    }
+    
 
     this.mensajesValidacion = errores.join('\n'); // Convierte el arreglo de errores a una cadena de texto separada por saltos de línea.
     
