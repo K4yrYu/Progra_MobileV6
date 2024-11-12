@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AlertasSilenciosasService } from 'src/app/services/alertasilenciosa.service';
 import { CamaraService } from 'src/app/services/camara.service';
 import { ManejodbService } from 'src/app/services/manejodb.service';
 
@@ -27,7 +28,8 @@ export class EditarconsolaPage implements OnInit {
     private router: Router,
     private bd: ManejodbService,
     private activedroute: ActivatedRoute,
-    private camaraService: CamaraService
+    private camaraService: CamaraService,
+    private silentAlert: AlertasSilenciosasService
   ) {
     this.activedroute.queryParams.subscribe(res => {
       if (this.router.getCurrentNavigation()?.extras.state) {
@@ -66,6 +68,10 @@ export class EditarconsolaPage implements OnInit {
     if (this.consolaLlego.stock_prod < 0) {
       this.errorStock = true;
       return;
+    }
+
+    if(this.consolaLlego.stock_prod === 0) {
+      this.Stock0NoDisponible();
     }
 
     try {
@@ -124,5 +130,10 @@ export class EditarconsolaPage implements OnInit {
   // Método para volver sin cambiar valores
   volver() {
     this.router.navigate(['/crudconsolas']);
+  }
+
+  async Stock0NoDisponible () {
+    //stock es 0
+    await this.silentAlert.presentSilentToast("Producto Cambiado a No disponible automaticamente. Razon: Stock = 0", 5000)
   }
 }

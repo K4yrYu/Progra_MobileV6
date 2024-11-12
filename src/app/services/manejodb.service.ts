@@ -1018,11 +1018,19 @@ async eliminarUsuarios(idU: any) {
         return; // No se modifica si ya existe otro juego con el mismo nombre
       }
   
-      // Ejecutar la consulta para modificar el juego
-      await this.database.executeSql(
-        'UPDATE producto SET nombre_prod = ?, precio_prod = ?, stock_prod = ?, descripcion_prod = ?, foto_prod = ?, estatus = ?, id_categoria = 1 WHERE id_producto = ?',
-        [nomJ, precioJ, stockJ, descripJ, fotoJ, estatusJ, idJ]
-      );
+      if(stockJ == 0){
+        // Ejecutar la consulta para modificar el juego
+        await this.database.executeSql(
+          'UPDATE producto SET nombre_prod = ?, precio_prod = ?, stock_prod = ?, descripcion_prod = ?, foto_prod = ?, estatus = 0, id_categoria = 1 WHERE id_producto = ?',
+          [nomJ, precioJ, stockJ, descripJ, fotoJ, idJ]
+        );
+      } else {
+        // Ejecutar la consulta para modificar el juego
+        await this.database.executeSql(
+          'UPDATE producto SET nombre_prod = ?, precio_prod = ?, stock_prod = ?, descripcion_prod = ?, foto_prod = ?, estatus = ?, id_categoria = 1 WHERE id_producto = ?',
+          [nomJ, precioJ, stockJ, descripJ, fotoJ, estatusJ, idJ]
+        );
+      }
   
       // Presentar alerta si se modificó el juego
       this.alertasService.presentAlert("Modificar", "Juego Modificado");
@@ -1120,11 +1128,21 @@ async eliminarUsuarios(idU: any) {
         this.alertasService.presentAlert("Modificar", "Ya existe un juguete con ese nombre. Por favor, elige otro.");
         return; // No se modifica si ya existe otro juguete con el mismo nombre
       }
-      // Ejecutar la consulta para modificar el juguete
-      await this.database.executeSql(
-        'UPDATE producto SET nombre_prod = ?, precio_prod = ?, stock_prod = ?, descripcion_prod = ?, foto_prod = ?, estatus = ?, id_categoria = 2 WHERE id_producto = ?',
-        [nomJ, precioJ, stockJ, descripJ, fotoJ, estatusJ, idJ]
-      );
+      
+      if (stockJ === 0){
+        // Ejecutar la consulta para modificar el juguete
+        await this.database.executeSql(
+          'UPDATE producto SET nombre_prod = ?, precio_prod = ?, stock_prod = ?, descripcion_prod = ?, foto_prod = ?, estatus = 0, id_categoria = 2 WHERE id_producto = ?',
+          [nomJ, precioJ, stockJ, descripJ, fotoJ, idJ]
+        );
+      } else {
+        // Ejecutar la consulta para modificar el juguete
+        await this.database.executeSql(
+          'UPDATE producto SET nombre_prod = ?, precio_prod = ?, stock_prod = ?, descripcion_prod = ?, foto_prod = ?, estatus = ?, id_categoria = 2 WHERE id_producto = ?',
+          [nomJ, precioJ, stockJ, descripJ, fotoJ, estatusJ, idJ]
+        );
+  
+      }
   
       // Presentar alerta si se modificó el juguete
       this.alertasService.presentAlert("Modificar", "Juguete Modificado");
@@ -1220,11 +1238,19 @@ async modificarConsola(idJ: any, nomJ: any, precioJ: any, stockJ: any, descripJ:
       return; // No se modifica si ya existe otra consola con el mismo nombre
     }
 
-    // Ejecutar la consulta para modificar la consola
-    await this.database.executeSql(
-      'UPDATE producto SET nombre_prod = ?, precio_prod = ?, stock_prod = ?, descripcion_prod = ?, foto_prod = ?, estatus = ?, id_categoria = 3 WHERE id_producto = ?',
-      [nomJ, precioJ, stockJ, descripJ, fotoJ, estatusJ, idJ]
-    );
+    if (stockJ === 0) {
+      // Ejecutar la consulta para modificar la consola
+      await this.database.executeSql(
+        'UPDATE producto SET nombre_prod = ?, precio_prod = ?, stock_prod = ?, descripcion_prod = ?, foto_prod = ?, estatus = 0, id_categoria = 3 WHERE id_producto = ?',
+        [nomJ, precioJ, stockJ, descripJ, fotoJ, idJ]
+      );
+    } else {
+      // Ejecutar la consulta para modificar la consola
+      await this.database.executeSql(
+        'UPDATE producto SET nombre_prod = ?, precio_prod = ?, stock_prod = ?, descripcion_prod = ?, foto_prod = ?, estatus = ?, id_categoria = 3 WHERE id_producto = ?',
+        [nomJ, precioJ, stockJ, descripJ, fotoJ, estatusJ, idJ]
+      );
+    }
 
     // Presentar alerta si se modificó la consola
     this.alertasService.presentAlert("Modificar", "Consola Modificada");
