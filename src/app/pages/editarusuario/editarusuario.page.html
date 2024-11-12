@@ -50,10 +50,6 @@
                    required></ion-input>
       </ion-item>
 
-      <ion-item style="margin: 5px 0;">
-        <p></p>
-      </ion-item>
-
       <!-- Selección de Rol -->
       <ion-item>
         <ion-label>Rol</ion-label>
@@ -67,22 +63,20 @@
       <!-- Selección de Estado -->
       <ion-item>
         <ion-label>Estado</ion-label>
-        <mat-select [(ngModel)]="usuarioLlego.estado_user">
+        <mat-select [(ngModel)]="usuarioLlego.estado_user" (ngModelChange)="onEstadoChange()">
           <mat-option *ngFor="let estado of estados" [value]="estado.value">
             {{ estado.viewValue }}
           </mat-option>
         </mat-select>
       </ion-item>
 
-      <!-- Caja de texto y botones de motivo del ban -->
-   <!-- Campo de motivo del ban: se muestra solo cuando el estado es "Baneado" -->
-   <div *ngIf="usuarioLlego.estado_user === '0'" class="motivo-ban-container">
-    <ion-item>
-      <ion-label position="stacked">Motivo del Ban</ion-label>
-      <ion-textarea [(ngModel)]="motivoBan" placeholder="Ingrese el motivo del ban aquí"></ion-textarea>
-    </ion-item>
-   </div>
-
+      <!-- Campo de motivo del ban: se muestra solo cuando el estado es "Baneado" -->
+      <div *ngIf="mostrarMotivoBan" class="motivo-ban-container">
+        <ion-item>
+          <ion-label position="stacked">Motivo del Ban</ion-label>
+          <ion-textarea [(ngModel)]="motivoBan" placeholder="Ingrese el motivo del ban aquí"></ion-textarea>
+        </ion-item>
+      </div>
 
       <!-- Mensajes de error -->
       <p *ngIf="errorUsuarioExistente" class="error-message">

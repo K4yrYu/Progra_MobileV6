@@ -56,15 +56,22 @@ export class EditarusuarioPage implements OnInit {
       if (this.router.getCurrentNavigation()?.extras.state) {
         this.usuarioLlego = { ...this.router.getCurrentNavigation()?.extras?.state?.['usuarioSelect'] };
         this.usuarioLlego.clave;
-
+  
         // Asignar estado y rol al usuario cargado
         this.estadoUserLlego = this.usuarioLlego.estado_user?.toString();
         this.rolUserLlego = this.usuarioLlego.id_rol?.toString();
-
+  
         const preguntaSeguridad = await this.bd.consultarPreguntasSeguridad(this.usuarioLlego.id_usuario);
         if (preguntaSeguridad) {
           this.preguntaSeguridad = 'colorFavorito';
           this.respuestaSeguridad = preguntaSeguridad.respuesta_seguridad;
+        }
+  
+        // Cargar el motivo del ban si el usuario está baneado
+        if (this.usuarioLlego.estado_user === '0') {
+          const motivo = await this.bd.consultarSuspencionUsuario(this.usuarioLlego.username);
+          this.motivoBan = motivo || '';  // Asignar cadena vacía si motivo es null o undefined
+          this.mostrarMotivoBan = true;
         }
       }
     });
@@ -150,21 +157,18 @@ export class EditarusuarioPage implements OnInit {
       return;
     }
 
-    if(this.usuarioLlego.estado_user === 0){
-      if(this.motivoBan === ''){
-        this.errorCampos = true;
-        return;
-      }
-    }
-
     try {
-      
-      await this.bd.agregarMotivoSuspencionUsuser(this.motivoBan,this.usuarioLlego.username,this.usuarioLlego.id_usuario);
-
-      if(this.usuarioLlego.estado_user === false){
-        await this.bd.agregarMotivoSuspencionUsuser(this.motivoBan,this.usuarioLlego.username,this.usuarioLlego.id_usuario);
+      if (this.usuarioLlego.estado_user === '0') {
+        // Si el usuario está baneado, guarda el motivo del ban
+        if (this.motivoBan.trim()) {
+          await this.bd.agregarMotivoSuspencionUsuser(this.motivoBan, this.usuarioLlego.username, this.usuarioLlego.id_usuario);
+        } else {
+          this.errorCampos = true;
+          return;
+        }
       } else {
-        await this.bd.eliminarMotivoSuspencionUsuser(this.usuarioLlego.id_usuario);
+        // Si el usuario ya no está baneado, elimina el motivo del ban
+        await this.bd.eliminarMotivoSuspencionUsuser(this.usuarioLlego.username);
       }
 
       await this.bd.modificarUsuarioConSeguridadAdmin(

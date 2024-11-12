@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { AlertasSilenciosasService } from 'src/app/services/alertasilenciosa.service';
 import { ManejodbService } from 'src/app/services/manejodb.service';
 import { AutenticacionService } from 'src/app/services/autenticacion.service';
+import { AlertasService } from 'src/app/services/alertas.service'; // Importa AlertasService
+
 
 @Component({
   selector: 'app-login',
@@ -40,7 +42,8 @@ export class LoginPage implements OnInit {
 
   constructor(private router: Router, 
               private bd: ManejodbService, 
-              private silentalert: AlertasSilenciosasService, 
+              private silentalert: AlertasSilenciosasService,
+              private alertasService: AlertasService, // Inyecta AlertasService 
               private autenticacion: AutenticacionService,
               private platform: Platform) {}
 
@@ -50,9 +53,8 @@ export class LoginPage implements OnInit {
 
     // Manejar el evento de botón físico de retroceso
     this.platform.backButton.subscribeWithPriority(10, () => {
-      // Si el usuario está en la página de login, bloquea el retroceso
       if (this.router.url === '/login') {
-        //accion del retroseso de bloquea
+        // Bloquear la acción de retroceso en esta página
       }
     });
   }
@@ -82,49 +84,56 @@ export class LoginPage implements OnInit {
       await this.loggin(this.usernameunlogged, this.password);
     }
   }
-  
+
   async loggin(user: string, clave: string) {
     if (user.trim() === '' || clave.trim() === '') {
-      this.loginError = true;
-      return;
+        this.loginError = true;
+        return;
     }
 
     await this.bd.consultarUsuariosLoggin(user, clave).then(async (found) => {
-      this.userpalalerta = user;
+        this.userpalalerta = user;
 
-      if (found && this.passwordPattern.test(clave)) {
-        const isBaneado = await this.bd.validarUsuarioBaneado(user);
-        if (isBaneado) {
-          this.alertauser(this.userpalalerta);
-          this.bd.actualizarEstadoUsuario(user).then(() => {
-            this.router.navigate(['/home']);
-            this.resetFields();
-            this.loginError = false;
-            this.usuarioBaneadoError = false;
-          }).catch(error => {
-            this.loginError = true;
-            this.resetFields();
-          });
+        if (found && this.passwordPattern.test(clave)) {
+            const isBaneado = await this.bd.validarUsuarioBaneado(user);
+            if (!isBaneado) {
+                // El usuario no está baneado, continúa con el inicio de sesión
+                this.bd.actualizarEstadoUsuario(user).then(() => {
+                    this.router.navigate(['/home']);
+                    this.alertauser(this.userpalalerta);
+                    this.resetFields();
+                    this.loginError = false;
+                    this.usuarioBaneadoError = false;
+                }).catch(error => {
+                    this.loginError = true;
+                    this.resetFields();
+                });
+            } else {
+                // El usuario está baneado, muestra el motivo del ban
+                await this.weonbaneao(user);
+                this.usuarioBaneadoError = true;
+                this.loginError = false;
+                this.resetFields();
+            }
         } else {
-          this.usuarioBaneadoError = true;
-          this.weonbaneao();
-          this.loginError = false;
-          this.resetFields();
+            this.loginError = true;
+            this.usuarioBaneadoError = false;
+            this.resetFields();
         }
-      } else {
+    }).catch(error => {
         this.loginError = true;
         this.usuarioBaneadoError = false;
         this.resetFields();
-      }
-    }).catch(error => {
-      this.loginError = true;
-      this.usuarioBaneadoError = false;
-      this.resetFields();
     });
   }
 
-  async weonbaneao(){
-    await this.bd.consultarSuspencionUsuario(this.usernameunlogged);
+  async weonbaneao(user: string) {
+    const motivo = await this.bd.consultarSuspencionUsuario(user);
+    if (motivo) {
+      await this.alertasService.presentAlert("Usuario Baneado", `Motivo de suspensión: ${motivo}`);
+    } else {
+      await this.alertasService.presentAlert("Usuario Baneado", "Su cuenta ha sido baneada.");
+    }
   }
 
   alertauser(x: any) {

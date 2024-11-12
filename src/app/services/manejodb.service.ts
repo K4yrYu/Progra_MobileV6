@@ -259,7 +259,7 @@ export class ManejodbService {
 
     this.platform.ready().then(() => {
       this.sqlite.create({
-        name: 'megagames32.db',
+        name: 'megagames47.db',
         location: 'default'
       }).then((db: SQLiteObject) => {
         this.database = db;
@@ -418,28 +418,22 @@ export class ManejodbService {
   }
 
 
-  async validarUsuarioBaneado(username: string): Promise<boolean> {
-    return this.database.executeSql('SELECT * FROM usuario WHERE username = ?', [username]).then(res => {
-        // Verificar si hay registros en la consulta
-        if (res.rows.length > 0) {
-            const user = res.rows.item(0); // Solo tomamos el primer registro
-
-            // Verificar si el usuario está baneado
-            if (user.estado_user === 0) {
-                // Si está baneado, lanzar alerta
-                this.alertasService.presentAlert("Usuario Baneado", "Su cuenta ha sido baneada.");
-                return false; // Retornar false si está baneado
-            }
-
-            return true; // Retornar true si no está baneado
-        }
-        
-        return false; // Retornar false si no se encuentra el usuario
-    }).catch(error => {
-        this.alertasService.presentAlert("ERROR", "Error al buscar el usuario: " + error);
-        return false; // Retornar false en caso de error
-    });
+  // En ManejodbService
+async validarUsuarioBaneado(username: string): Promise<boolean> {
+  const sql = "SELECT estado_user FROM usuario WHERE username = ?";
+  try {
+    const res = await this.database.executeSql(sql, [username]);
+    if (res.rows.length > 0) {
+      const user = res.rows.item(0);
+      return user.estado_user === 0; // Devuelve true solo si el usuario está baneado (estado_user = 0)
+    }
+    return false; // Retorna false si el usuario no existe
+  } catch (error) {
+    console.error("Error al buscar el usuario:", error);
+    return false; // Retorna false en caso de error
+  }
 }
+
 
   async consultarUsuariosPorEstado(): Promise<Usuarios[]> {
     return this.database.executeSql('SELECT * FROM usuario WHERE estado_user = 1', []).then(res => {
@@ -2284,25 +2278,22 @@ async validarRespuestaSeguridad(username: string, respuesta: string): Promise<bo
   
 
   //consultar la suspencion actual
-  async consultarSuspencionUsuario(sususu: string): Promise<string | null> {
-    const sql = "SELECT * FROM sususuario WHERE user_suspendido = ?";
-  
-    try {
-      const res = await this.database.executeSql(sql, [sususu]);
-  
-      if (res.rows.length > 0) {
-        // Devuelve solo el motivo de baneo
-        const mtvSS = res.rows.item(0);
-        this.alertasService.presentAlert('Usuario Suspendido',`Motivo: ${mtvSS.motivo_suspencion}`) 
-        return mtvSS;
-      } else {
-        return null; // Si no hay registros de suspensión activos
-      }
-    } catch (e) {
-      this.alertasService.presentAlert('Error al obtener suspensión:', JSON.stringify(e));
-      throw e;
+ // En ManejodbService
+async consultarSuspencionUsuario(username: string): Promise<string | null> {
+  const sql = "SELECT motivo_suspencion FROM sususuario WHERE user_suspendido = ?";
+  try {
+    const res = await this.database.executeSql(sql, [username]);
+    if (res.rows.length > 0) {
+      return res.rows.item(0).motivo_suspencion; // Devuelve el motivo de suspensión si existe
     }
+    return null; // Retorna null si no hay motivo de suspensión
+  } catch (error) {
+    console.error("Error al obtener suspensión:", error);
+    return null; // Retorna null en caso de error
   }
+}
+
+  
 
   //agregar una suspencion del usuario
   agregarMotivoSuspencionUsuser(motivo_baneo: string, nombreuser: string, id_usuario: number): void {
@@ -2349,6 +2340,8 @@ async validarRespuestaSeguridad(username: string, respuesta: string): Promise<bo
   
   /////////////////////////////////////////////////////////////////////////////////////
   
+
+ 
 
 
 
