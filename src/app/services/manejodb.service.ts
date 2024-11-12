@@ -95,7 +95,7 @@ export class ManejodbService {
   //insert de 1 usuario 
 
   //user maestro
-  registrousuario: string = "INSERT OR IGNORE INTO usuario (rut_usuario, nombres_usuario, apellidos_usuario, username, clave, correo, token_recup_clave, foto_usuario, estado_user, userlogged, mantener_sesion, id_rol) VALUES ('12345678-9', 'Vicente Ignacio', 'Palma Salazar', 'admin', 'Admin123.', 'vicentepalma1202@gmail.com', 0, null, 1, 0, 0, 1);";
+  registrousuario: string = "INSERT OR IGNORE INTO usuario (rut_usuario, nombres_usuario, apellidos_usuario, username, clave, correo, token_recup_clave, foto_usuario, estado_user, userlogged, mantener_sesion, id_rol) VALUES ('12345678-9', 'Vicente Ignacio', 'Palma Salazar', 'admin', 'Admin123.', 'vicentepalma1202@gmail.com', 0, 'assets/img/Zero.png', 1, 0, 0, 1);";
 
 
   //insert de las categorias de los productos
