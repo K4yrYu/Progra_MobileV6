@@ -89,16 +89,6 @@
         </mat-select>
       </ion-item>
 
-      <!-- Selección de Estado -->
-      <ion-item>
-        <ion-label>Estado</ion-label>
-        <mat-select [(ngModel)]="usuario.estado">
-          <mat-option *ngFor="let estado of estados" [value]="estado.value">
-            {{ estado.viewValue }}
-          </mat-option>
-        </mat-select>
-      </ion-item>
-
       <!-- Mensajes de error -->
       <p *ngIf="errorUsuarioExistente" class="error-message">
         Este Usuario ya está registrado.

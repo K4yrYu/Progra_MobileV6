@@ -13,7 +13,7 @@
       <ion-title size="large">Retiros</ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-list>
+  <ng-container *ngIf="arregloVenta && arregloVenta.length > 0; else noVentas">
     <ion-card *ngFor="let retir of arregloVenta">
       <ion-card-header>
         <ion-card-subtitle>Monto Total: {{ retir.total }}</ion-card-subtitle>
@@ -29,5 +29,16 @@
         </p>
       </ion-card-content>
     </ion-card>
-  </ion-list>
+  </ng-container>
+
+  <ng-template #noVentas>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Historial de Compras</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Aún no hay has hecho ninguna compra.</p>
+      </ion-card-content>
+    </ion-card>
+  </ng-template>
 </ion-content>

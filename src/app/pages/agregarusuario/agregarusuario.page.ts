@@ -120,7 +120,8 @@ export class AgregarusuarioPage {
       !this.usuario.contrasena ||
       !this.usuario.confirmarContrasena ||
       !this.usuario.preguntaSeguridad ||
-      !this.respuestaSeguridad
+      !this.respuestaSeguridad ||
+      !this.usuario.rol
     ) {
       this.errorCampos = true;
       return;

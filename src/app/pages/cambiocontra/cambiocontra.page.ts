@@ -69,8 +69,13 @@ export class CambiocontraPage {
       return;
     }
 
+    if (/\s/.test(this.claveNueva)) {
+      this.errorMessage = 'La clave no puede contener espacios en blanco.';
+      return;
+    }
+
     this.errorMessage = '';
-    await this.bd.cambiarContrasena(this.arregloUsuarioConectado[0].id_usuario, this.claveNueva);
+    await this.bd.cambiarContrasena(this.arregloUsuarioConectado[0].id_usuario, this.claveNueva.trim());
     this.alertasService.presentAlert('Listo', 'Contraseña cambiada con éxito');
     this.arregloUsuarioConectado = [];
     this.router.navigate(['/perfil']);

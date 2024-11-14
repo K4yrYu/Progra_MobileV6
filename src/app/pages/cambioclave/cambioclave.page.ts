@@ -40,14 +40,17 @@ export class CambioclavePage implements OnInit {
       this.errorMessage = 'Las contraseñas no coinciden.';
       return; // Salir si las contraseñas no coinciden
     } else if (!this.passwordPattern.test(this.password)) {
-      this.errorMessage = 'La contraseña no cumple con los requisitos.';
+      this.errorMessage = 'La contraseña debe tener al menos 6 caracteres, incluyendo mayúsculas, minúsculas y caracteres especiales sin espacios en blanco.';
+      return; // Salir si la contraseña no cumple con el patrón
+    } else if (/\s/.test(this.password)) {
+      this.errorMessage = 'La contraseña debe tener al menos 6 caracteres, incluyendo mayúsculas, minúsculas y caracteres especiales sin espacios en blanco.';
       return; // Salir si la contraseña no cumple con el patrón
     } else {
       this.errorMessage = ''; // Limpiar el mensaje de error
 
       // Llamar a la función para cambiar la contraseña en la base de datos
       try {
-        await this.bd.cambiarContrasena(this.usuarioFue.id_usuario, this.password);
+        await this.bd.cambiarContrasena(this.usuarioFue.id_usuario, this.password.trim());
         await this.alertasService.presentAlert("Éxito", "Contraseña cambiada con éxito."); // Mostrar alerta de éxito
         this.router.navigate(['/login']); // Redirigir a la página de inicio de sesión
       } catch (error) {

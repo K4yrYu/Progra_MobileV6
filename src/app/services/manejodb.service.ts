@@ -382,6 +382,8 @@ export class ManejodbService {
 
   async consultarUsuarioPorNombre(nombreUsuario: string): Promise<any> {
     const query = 'SELECT * FROM usuario WHERE username = ?'; // Ajusta la tabla y columna según tu esquema
+    // Normalizar el nombre del juego eliminando espacios extra
+    nombreUsuario = nombreUsuario.trim().replace(/\s+/g, ' ');
     const result = await this.database.executeSql(query, [nombreUsuario]);
     return result.rows.length > 0 ? result.rows.item(0) : null; // Devuelve el primer usuario encontrado o null
   }
@@ -698,7 +700,7 @@ async agregarUsuariosAdmin(
     // Ejecutar la consulta para agregar el usuario
     await this.database.executeSql(
       'INSERT OR IGNORE INTO usuario (rut_usuario, nombres_usuario, apellidos_usuario, username, clave, correo, token_recup_clave, foto_usuario, estado_user, userlogged, mantener_sesion, id_rol) VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?, 0, 0, ?)', 
-      [rutU, nombresU, apellidosU, userU, claveU, correoU, fotoU, estadoU, id_rolU]
+      [rutU, nombresU, apellidosU, userU, claveU, correoU, fotoU, 1, id_rolU]
     );
 
     // Obtener el ID del último usuario agregado

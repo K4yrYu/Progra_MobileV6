@@ -27,6 +27,7 @@ export class EditarusuarioPage implements OnInit {
   errorRut: boolean = false;
   errorUsuarioExistente: boolean = false;
   errorCorreoExistente: boolean = false;
+  errorUsuarioConEspacios: boolean = false;
 
   roles = [
     { value: '1', viewValue: 'Administrador' },
@@ -134,7 +135,8 @@ export class EditarusuarioPage implements OnInit {
         !this.usuarioLlego.correo || !this.usuarioLlego.username || 
         !this.usuarioLlego.clave || 
         !this.usuarioLlego.id_rol || this.usuarioLlego.estado_user === undefined || 
-        !this.usuarioLlego.rut_usuario || !this.respuestaSeguridad) {
+        !this.usuarioLlego.rut_usuario || !this.respuestaSeguridad ||
+        !this.usuarioLlego.estado_user) {
       this.errorCampos = true;
       return;
     }
@@ -154,6 +156,11 @@ export class EditarusuarioPage implements OnInit {
     const rutPattern = /^\d{1,8}-[0-9kK]{1}$/;
     if (!rutPattern.test(this.usuarioLlego.rut_usuario)) {
       this.errorRut = true;
+      return;
+    }
+
+    if (/\s/.test(this.usuarioLlego.usuario)) {
+      this.errorUsuarioConEspacios = true;
       return;
     }
 
