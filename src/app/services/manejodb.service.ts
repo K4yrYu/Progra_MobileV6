@@ -2364,5 +2364,42 @@ async consultarSuspencionUsuario(username: string): Promise<string | null> {
   sususuario: string = "CREATE TABLE IF NOT EXISTS sususuario (id_sususuario INTEGER PRIMARY KEY autoincrement, motivo_suspencion TEXT NOT NULL, user_suspendido VARCHAR(20) NOT NULL, id_usuario INTEGER, FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario));";
   
   */
+
+  /////////////////////////////////////////////////////////////////////////////
+  // Método para obtener la pregunta de seguridad de un usuario
+  async obtenerPreguntaSeguridad(nombreUsuario: string): Promise<string | null> {
+    try {
+      const query = `
+        SELECT s.pregunta_seguridad 
+        FROM seguridad s 
+        INNER JOIN usuario u ON s.id_usuario = u.id_usuario 
+        WHERE u.username = ?`;
+      const result = await this.database.executeSql(query, [nombreUsuario]);
+      
+      if (result.rows.length > 0) {
+        return result.rows.item(0).pregunta_seguridad; // Devuelve la pregunta de seguridad
+      } else {
+        return null; // No se encontró la pregunta de seguridad
+      }
+    } catch (error) {
+      console.error("Error al obtener la pregunta de seguridad", error);
+      return null;
+    }
+  }
+
+ 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
   

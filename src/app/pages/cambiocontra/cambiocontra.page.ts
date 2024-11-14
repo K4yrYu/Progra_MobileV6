@@ -54,6 +54,11 @@ export class CambiocontraPage {
   }
 
   async cambiarContrasena() {
+    // Eliminar espacios en blanco al inicio y al final de las contraseñas
+    this.claveActual = this.claveActual.trim();
+    this.claveNueva = this.claveNueva.trim();
+    this.confirmPassword = this.confirmPassword.trim();
+
     if (this.claveNueva === this.claveActual) {
       this.errorMessage = 'La nueva contraseña no puede ser igual a la contraseña actual';
       return;
@@ -75,7 +80,7 @@ export class CambiocontraPage {
     }
 
     this.errorMessage = '';
-    await this.bd.cambiarContrasena(this.arregloUsuarioConectado[0].id_usuario, this.claveNueva.trim());
+    await this.bd.cambiarContrasena(this.arregloUsuarioConectado[0].id_usuario, this.claveNueva);
     this.alertasService.presentAlert('Listo', 'Contraseña cambiada con éxito');
     this.arregloUsuarioConectado = [];
     this.router.navigate(['/perfil']);
@@ -90,3 +95,4 @@ export class CambiocontraPage {
     this.arregloUsuarioConectado = await this.bd.consultarUsuariosPorEstadoConectado();
   }
 }
+
