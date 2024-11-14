@@ -52,9 +52,6 @@ describe('LoginPage', () => {
     expect(component).toBeTruthy();
   });
 
-  it('debería crear el componente', () => {
-    expect(component).toBeTruthy();
-  });
 
   it('debería establecer loginError en true si el usuario o contraseña están vacíos', async () => {
     component.usernameunlogged = '';
